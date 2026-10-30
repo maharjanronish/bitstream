@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adds modern roots (ISRG Root X1, GTS Root R4) on top of the system store so
+     HTTPS keeps working on unpatched Android 6/7 TV boxes. Applies to WebView
+     on API 24+; the app's OkHttp client applies the same roots in code for API 23. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/isrgrootx1" />
+            <certificates src="@raw/gtsr4" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
