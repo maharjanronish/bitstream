@@ -20,6 +20,7 @@ import com.bitstream.tv.R
 import com.bitstream.tv.core.Title
 import com.bitstream.tv.home.PosterAdapter
 import com.bitstream.tv.ui.Routes
+import com.bitstream.tv.ui.SourceChooser
 import kotlinx.coroutines.launch
 
 class SearchActivity : ComponentActivity() {
@@ -86,7 +87,12 @@ class SearchActivity : ComponentActivity() {
     }
 
     private fun onTitleClicked(item: Title) {
-        if (item.isTv) Routes.openShow(this, item.id, item.displayName, item.poster_path)
-        else Routes.playMovie(this, item.id, item.displayName)
+        if (item.isTv) {
+            Routes.openShow(this, item.id, item.displayName, item.poster_path)
+        } else {
+            SourceChooser.show(this, item.displayName) { provider ->
+                Routes.playMovie(this, item.id, item.displayName, provider.id)
+            }
+        }
     }
 }

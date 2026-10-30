@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
@@ -17,6 +16,7 @@ import coil.load
 import com.bitstream.tv.R
 import com.bitstream.tv.core.Tmdb
 import com.bitstream.tv.ui.Routes
+import com.bitstream.tv.ui.SourceChooser
 import kotlinx.coroutines.launch
 
 /** Season/episode picker for TV shows. Movies never come here — they play directly. */
@@ -31,13 +31,15 @@ class ShowActivity : ComponentActivity() {
     private val vm: ShowViewModel by viewModels()
     private lateinit var episodeAdapter: EpisodeAdapter
     private var showTitle: String = ""
+    private var showTmdbId: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show)
 
         showTitle = intent.getStringExtra(EXTRA_TITLE).orEmpty()
-        val tmdbId = intent.getLongExtra(EXTRA_TMDB_ID, -1L)
+        showTmdbId = intent.getLongExtra(EXTRA_TMDB_ID, -1L)
+        val tmdbId = showTmdbId
 
         findViewById<ImageView>(R.id.showPoster)
             .load(Tmdb.posterUrl(intent.getStringExtra(EXTRA_POSTER)))
@@ -109,17 +111,19 @@ class ShowActivity : ComponentActivity() {
 
     private fun playEpisode(episode: com.bitstream.tv.core.Episode) {
         val state = vm.state.value
-        val imdbId = state.show?.external_ids?.imdb_id
-        if (imdbId.isNullOrBlank()) {
-            Toast.makeText(this, R.string.error_stream, Toast.LENGTH_SHORT).show()
-            return
+        val epLabel = "S${state.season}E${episode.episode_number}"
+        // IMDb may be null on rare titles — providers that also take TMDB
+        // ids (e.g. VidAPI) can still play those.
+        SourceChooser.show(this, "$showTitle · $epLabel") { provider ->
+            Routes.playEpisode(
+                this,
+                state.show?.external_ids?.imdb_id,
+                showTmdbId,
+                state.season,
+                episode.episode_number,
+                "$showTitle · $epLabel",
+                provider.id,
+            )
         }
-        Routes.playEpisode(
-            this,
-            imdbId,
-            state.season,
-            episode.episode_number,
-            "$showTitle · S${state.season}E${episode.episode_number}",
-        )
     }
 }

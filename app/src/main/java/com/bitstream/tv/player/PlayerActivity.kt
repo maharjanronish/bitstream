@@ -18,8 +18,8 @@ import androidx.lifecycle.lifecycleScope
 import com.bitstream.tv.R
 import com.bitstream.tv.core.Tmdb
 import com.bitstream.tv.provider.Providers
+import com.bitstream.tv.provider.TitleIds
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 /**
  * Fullscreen embed player. Runs in the dedicated `:player` process so that
@@ -37,6 +37,7 @@ class PlayerActivity : ComponentActivity() {
         const val EXTRA_SEASON = "season"
         const val EXTRA_EPISODE = "episode"
         const val EXTRA_TITLE = "title"
+        const val EXTRA_PROVIDER_ID = "provider_id"
 
         const val KIND_MOVIE = "movie"
         const val KIND_TV = "tv"
@@ -47,7 +48,6 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private lateinit var webView: WebView
-    private var currentUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,23 +69,23 @@ class PlayerActivity : ComponentActivity() {
     private fun resolveAndLoad() {
         showLoading()
         val kind = intent.getStringExtra(EXTRA_KIND)
-        val provider = Providers.default
+        val provider = Providers.byId(intent.getStringExtra(EXTRA_PROVIDER_ID))
+            ?: Providers.default
         lifecycleScope.launch {
             try {
                 val url = if (kind == KIND_TV) {
-                    val imdbId = intent.getStringExtra(EXTRA_IMDB_ID).orEmpty()
                     provider.tvUrl(
-                        imdbId,
+                        TitleIds(
+                            imdbId = intent.getStringExtra(EXTRA_IMDB_ID),
+                            tmdbId = intent.getLongExtra(EXTRA_TMDB_ID, -1L),
+                        ),
                         intent.getIntExtra(EXTRA_SEASON, 1),
                         intent.getIntExtra(EXTRA_EPISODE, 1),
                     )
                 } else {
                     val tmdbId = intent.getLongExtra(EXTRA_TMDB_ID, -1L)
-                    val imdbId = Tmdb.movieImdbId(tmdbId)
-                        ?: throw IOException("No IMDb id for this title")
-                    provider.movieUrl(imdbId)
+                    provider.movieUrl(TitleIds(imdbId = Tmdb.movieImdbId(tmdbId), tmdbId = tmdbId))
                 }
-                currentUrl = url
                 webView.loadUrl(url)
             } catch (t: Throwable) {
                 showError()
@@ -121,9 +121,9 @@ class PlayerActivity : ComponentActivity() {
                     val scheme = uri.scheme
                     if (scheme != "http" && scheme != "https") return true // intent:, market:, mailto: …
                     val host = uri.host ?: return true
-                    // Keep the top frame inside the provider; iframe video hosts
-                    // are unaffected by this check.
-                    return !Providers.default.navHosts.any {
+                    // Keep the top frame inside known provider hosts; iframe
+                    // video hosts are unaffected by this check.
+                    return !Providers.allNavHosts.any {
                         host == it || host.endsWith(".$it")
                     }
                 }

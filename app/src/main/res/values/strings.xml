@@ -15,6 +15,8 @@
     <string name="type_to_search">Type to search</string>
     <string name="searching">Searching…</string>
     <string name="season_of_format">Season %1$d of %2$d</string>
+    <string name="choose_source">Choose source</string>
+    <string name="source_hint">OK to play  ·  BACK to cancel</string>
     <string name="press_back_to_exit">Press BACK to exit</string>
     <string name="old_webview">Your Android System WebView is very old — video may fail. Please update it from Google Play.</string>
     <string name="no_description">No description</string>

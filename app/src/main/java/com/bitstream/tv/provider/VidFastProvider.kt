@@ -1,5 +1,7 @@
 package com.bitstream.tv.provider
 
+import java.io.IOException
+
 /**
  * VidFast embed provider.
  * Movie: https://vidfast.vc/movie/{imdbId}?autoPlay=true
@@ -14,8 +16,13 @@ object VidFastProvider : EmbedProvider {
 
     private const val BASE = "https://vidfast.vc"
 
-    override fun movieUrl(imdbId: String): String = "$BASE/movie/$imdbId?autoPlay=true"
+    override fun movieUrl(ids: TitleIds): String {
+        val imdb = ids.imdbId ?: throw IOException("VidFast needs an IMDb id")
+        return "$BASE/movie/$imdb?autoPlay=true"
+    }
 
-    override fun tvUrl(imdbId: String, season: Int, episode: Int): String =
-        "$BASE/tv/$imdbId/$season/$episode?autoPlay=true"
+    override fun tvUrl(ids: TitleIds, season: Int, episode: Int): String {
+        val imdb = ids.imdbId ?: throw IOException("VidFast needs an IMDb id")
+        return "$BASE/tv/$imdb/$season/$episode?autoPlay=true"
+    }
 }

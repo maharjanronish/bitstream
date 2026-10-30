@@ -17,29 +17,34 @@ object Routes {
         )
     }
 
-    fun playMovie(context: Context, tmdbId: Long, title: String) {
+    fun playMovie(context: Context, tmdbId: Long, title: String, providerId: String) {
         context.startActivity(
             Intent(context, PlayerActivity::class.java)
                 .putExtra(PlayerActivity.EXTRA_KIND, PlayerActivity.KIND_MOVIE)
                 .putExtra(PlayerActivity.EXTRA_TMDB_ID, tmdbId)
                 .putExtra(PlayerActivity.EXTRA_TITLE, title)
+                .putExtra(PlayerActivity.EXTRA_PROVIDER_ID, providerId)
         )
     }
 
     fun playEpisode(
         context: Context,
-        imdbId: String,
+        imdbId: String?,
+        tmdbId: Long,
         season: Int,
         episode: Int,
         title: String,
+        providerId: String,
     ) {
         context.startActivity(
             Intent(context, PlayerActivity::class.java)
                 .putExtra(PlayerActivity.EXTRA_KIND, PlayerActivity.KIND_TV)
                 .putExtra(PlayerActivity.EXTRA_IMDB_ID, imdbId)
+                .putExtra(PlayerActivity.EXTRA_TMDB_ID, tmdbId)
                 .putExtra(PlayerActivity.EXTRA_SEASON, season)
                 .putExtra(PlayerActivity.EXTRA_EPISODE, episode)
                 .putExtra(PlayerActivity.EXTRA_TITLE, title)
+                .putExtra(PlayerActivity.EXTRA_PROVIDER_ID, providerId)
         )
     }
 }

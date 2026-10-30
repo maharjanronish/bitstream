@@ -11,7 +11,7 @@ TMDB (trending + search)  →  IMDb id  →  embed provider URL  →  fullscreen
 ```
 
 - **Data**: [TMDB](https://www.themoviedb.org) (read-only token in `core/Tmdb.kt`)
-- **Playback**: [VidFast](https://vidfast.vc) embeds — `vidfast.vc/movie/{imdbId}` and `vidfast.vc/tv/{imdbId}/{s}/{e}`
+- **Playback**: embed providers — [VidFast](https://vidfast.vc) and [VidAPI](https://vidapi.ru)
 - **Player**: system WebView, isolated in a dedicated `:player` process
 
 ## Features
@@ -19,7 +19,10 @@ TMDB (trending + search)  →  IMDb id  →  embed provider URL  →  fullscreen
 - Home: **Trending Movies** / **Trending TV** poster rows, endless scroll
 - Search with the system keyboard (IME), mixed movie/TV results with badges
 - TV shows: season switcher + episode list (with overview on focus)
-- Movies: click poster → plays immediately
+- **Choose source on play**: clicking a movie poster or an episode opens a
+  D-pad-friendly overlay listing every registered provider (VidFast, VidAPI, …).
+  The last used source is pre-focused; if only one provider is registered the
+  overlay is skipped and playback starts immediately.
 - Remote-only UI: arrows + OK + BACK, visible focus ring, focus memory
 - Popup/new-window blocking and top-frame navigation lock in the player
 - Bundled modern CA roots (Let's Encrypt ISRG X1, Google Trust Services R4) so HTTPS keeps working on unpatched Android 6/7 boxes
@@ -69,22 +72,35 @@ and uploads it as an artifact.
 
 ## Adding another embed provider
 
-The app talks to sources only through the `EmbedProvider` interface:
+The app talks to sources only through the `EmbedProvider` interface, and the
+on-play **Choose source** overlay lists whatever is in the registry — so a new
+provider needs **one small file + one registry line**, nothing else:
 
 ```kotlin
 object MyProvider : EmbedProvider {
     override val id = "myprovider"
     override val name = "My Provider"
     override val navHosts = setOf("myprovider.example")
-    override fun movieUrl(imdbId: String) = "https://myprovider.example/embed/movie/$imdbId"
-    override fun tvUrl(imdbId: String, season: Int, episode: Int) =
-        "https://myprovider.example/embed/tv/$imdbId/$season/$episode"
+
+    // Providers receive BOTH ids — use whichever your service keys off
+    // (IMDb `tt…`, TMDB numeric, or a fallback chain).
+    override fun movieUrl(ids: TitleIds) =
+        "https://myprovider.example/embed/movie/${ids.imdbId ?: ids.tmdbId}"
+    override fun tvUrl(ids: TitleIds, season: Int, episode: Int) =
+        "https://myprovider.example/embed/tv/${ids.imdbId ?: ids.tmdbId}/$season/$episode"
 }
 
-Providers.register(MyProvider) // first registered provider is the default
+// provider/EmbedProvider.kt — add to the registry list:
+private val registry = mutableListOf<EmbedProvider>(VidFastProvider, VidApiProvider, MyProvider)
 ```
 
-That's the whole integration — no UI changes needed.
+The new source immediately shows up as a button in the chooser — no UI changes.
+Ships with:
+
+| Provider | Movie embed | TV embed |
+| --- | --- | --- |
+| **VidFast** | `vidfast.vc/movie/{imdb}?autoPlay=true` | `vidfast.vc/tv/{imdb}/{s}/{e}?autoPlay=true` |
+| **VidAPI** | `vaplayer.ru/embed/movie/{imdb-or-tmdb}?autoplay=1` | `vaplayer.ru/embed/tv/{imdb-or-tmdb}/{s}/{e}?autoplay=1` |
 
 ## Project layout
 
@@ -92,12 +108,12 @@ That's the whole integration — no UI changes needed.
 app/src/main/java/com/bitstream/tv/
 ├── App.kt                  # application, shared Coil image pipeline
 ├── core/                   # TMDB client, models, OkHttp + old-Android TLS fix
-├── provider/               # EmbedProvider interface + registry, VidFast
+├── provider/               # EmbedProvider interface + registry, VidFast, VidAPI
 ├── home/                   # trending rows (D-pad focus UX)
 ├── search/                 # IME search + mixed results grid
 ├── show/                   # season/episode picker
 ├── player/                 # WebView player (runs in :player process)
-└── ui/Routes.kt            # navigation helpers
+└── ui/                     # navigation helpers + "Choose source" overlay
 ```
 
 ## Notes for old Android 6 boxes
