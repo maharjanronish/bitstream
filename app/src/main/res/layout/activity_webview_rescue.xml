@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/page_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fix_webview"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/rescueStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/webview_rescue_intro"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/webview_rescue_step1"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/rescueStep2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="3dp"
+            android:text="@string/webview_rescue_step3"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/rescueUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:alpha="0.75"
+            android:text="@string/webview_download_url"
+            android:textColor="@color/accent"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/rescueOpen"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/control_height"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/bg_button"
+            android:minWidth="260dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/open_download_page"
+            android:textColor="@drawable/text_button" />
+
+        <Button
+            android:id="@+id/rescuePlay"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/control_height"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_button"
+            android:minWidth="260dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/update_via_play"
+            android:textColor="@drawable/text_button"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/rescueCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/control_height"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_button"
+            android:minWidth="260dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/check_again"
+            android:textColor="@drawable/text_button" />
+
+        <TextView
+            android:id="@+id/rescueResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/press_back_to_exit"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+</ScrollView>

@@ -42,6 +42,14 @@
             android:exported="false"
             android:screenOrientation="landscape" />
 
+        <!-- Old-box rescue: shown from the player when the system WebView is
+             too old to run embed players; guides a one-time WebView update. -->
+        <activity
+            android:name=".ui.WebViewRescueActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+
         <!-- Runs in its own process: leaving playback kills it and frees all
              WebView memory instantly instead of leaking it into the app. -->
         <activity

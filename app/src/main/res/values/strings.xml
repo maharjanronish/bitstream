@@ -18,7 +18,22 @@
     <string name="choose_source">Choose source</string>
     <string name="source_hint">OK to play  ·  BACK to cancel</string>
     <string name="press_back_to_exit">Press BACK to exit</string>
-    <string name="old_webview">Your Android System WebView is very old — video may fail. Please update it from Google Play.</string>
+    <string name="old_webview">Your box’s WebView (Chromium %1$d) is outdated — if the video won’t play, select “Fix WebView”.</string>
+    <string name="fix_webview">Fix WebView</string>
+    <string name="webview_rescue_status">WebView: Chromium %1$s   ·   Android %2$s</string>
+    <string name="webview_rescue_status_unknown">WebView: unknown   ·   Android %1$s</string>
+    <string name="webview_rescue_intro">Streaming needs a modern WebView (Chromium 80 or newer). This box ships an outdated one, so videos can’t play here. This is usually fixable in a few minutes — a one-time update per box, no rooting needed.</string>
+    <string name="webview_rescue_step1">1 ·  Press “Open download page” below (it opens this box’s browser). On the site, pick “Android System WebView 105.0.5195.136” — the newest release that still supports Android 6/7 boxes.</string>
+    <string name="webview_rescue_step2">2 ·  Download the “%1$s” file variant for this box, open it when it finishes, allow installs from unknown sources when asked, and install.</string>
+    <string name="webview_rescue_step3">3 ·  Come back here and press “Check again”. If it still shows the old number, fully reboot the box once.</string>
+    <string name="webview_download_url">https://www.apkmirror.com/apk/google-inc/android-system-webview/android-system-webview-105-0-5195-136-release/</string>
+    <string name="open_download_page">Open download page</string>
+    <string name="update_via_play">Update via Google Play</string>
+    <string name="check_again">Check again</string>
+    <string name="webview_now_ok">All good — WebView is now Chromium %1$s. Videos should play. Enjoy!</string>
+    <string name="still_old">Still reading Chromium %1$s. If you just installed the update, fully reboot the box and check again.</string>
+    <string name="webview_not_detected">Couldn’t detect this box’s WebView version. If videos still fail, check Settings → Apps for “Android System WebView”.</string>
+    <string name="no_browser">No browser app found on this box.</string>
     <string name="no_description">No description</string>
     <string name="no_air_date">No air date</string>
 </resources>

@@ -61,10 +61,23 @@
             android:textSize="15sp" />
 
         <Button
-            android:id="@+id/playerRetry"
+            android:id="@+id/playerFixWebview"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/control_height"
             android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button"
+            android:minWidth="140dp"
+            android:paddingStart="28dp"
+            android:paddingEnd="28dp"
+            android:text="@string/fix_webview"
+            android:textColor="@drawable/text_button"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/playerRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/control_height"
+            android:layout_marginTop="10dp"
             android:background="@drawable/bg_button"
             android:minWidth="120dp"
             android:paddingStart="28dp"

@@ -1,5 +1,6 @@
 package com.bitstream.tv.player
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -17,8 +18,10 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bitstream.tv.R
 import com.bitstream.tv.core.Tmdb
+import com.bitstream.tv.core.WebViewInfo
 import com.bitstream.tv.provider.Providers
 import com.bitstream.tv.provider.TitleIds
+import com.bitstream.tv.ui.WebViewRescueActivity
 import kotlinx.coroutines.launch
 
 /**
@@ -42,8 +45,7 @@ class PlayerActivity : ComponentActivity() {
         const val KIND_MOVIE = "movie"
         const val KIND_TV = "tv"
 
-        /** VidFast needs a reasonably modern JS engine in the WebView. */
-        private const val MIN_WEBVIEW_MAJOR = 80
+        /** Set once per process when an outdated WebView is detected. */
         private var webviewChecked = false
     }
 
@@ -57,6 +59,9 @@ class PlayerActivity : ComponentActivity() {
         findViewById<TextView>(R.id.playerTitle).text =
             intent.getStringExtra(EXTRA_TITLE).orEmpty()
         findViewById<Button>(R.id.playerRetry).setOnClickListener { resolveAndLoad() }
+        findViewById<Button>(R.id.playerFixWebview).setOnClickListener {
+            startActivity(Intent(this, WebViewRescueActivity::class.java))
+        }
 
         webView = findViewById(R.id.webView)
         setupWebView()
@@ -181,27 +186,20 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
-    /** Warn once (per process) if the system WebView is too old for the embed player. */
+    /** Warn once (per process) when the system WebView is too old for embed players. */
     private fun checkWebViewAge() {
         if (webviewChecked) return
         webviewChecked = true
-        try {
-            var version: String? = null
-            for (pkg in listOf("com.google.android.webview", "com.android.webview")) {
-                try {
-                    version = packageManager.getPackageInfo(pkg, 0).versionName
-                    break
-                } catch (ignored: Exception) {
-                }
-            }
-            val major = version?.split('.')?.firstOrNull()?.toIntOrNull() ?: return
-            if (major < MIN_WEBVIEW_MAJOR) {
-                val warning = findViewById<TextView>(R.id.webviewWarning)
-                warning.visibility = View.VISIBLE
-                warning.postDelayed({ warning.visibility = View.GONE }, 6000)
-            }
-        } catch (ignored: Throwable) {
-        }
+        val state = WebViewInfo.detect(this)
+        if (!state.isOld) return
+
+        val warning = findViewById<TextView>(R.id.webviewWarning)
+        warning.text = getString(R.string.old_webview, state.major)
+        warning.visibility = View.VISIBLE
+        warning.postDelayed({ warning.visibility = View.GONE }, 7000)
+
+        // Surface the rescue entry whenever playback fails on this box.
+        findViewById<Button>(R.id.playerFixWebview).visibility = View.VISIBLE
     }
 
     // ------------------------------------------------------------------ ui
@@ -217,7 +215,13 @@ class PlayerActivity : ComponentActivity() {
 
     private fun showError() {
         findViewById<View>(R.id.playerLoading).visibility = View.GONE
-        findViewById<View>(R.id.playerError).visibility = View.VISIBLE
+        val error = findViewById<View>(R.id.playerError)
+        error.visibility = View.VISIBLE
+        // On old-WebView boxes the fix button is visible — make it the first
+        // stop, retry below it.
+        findViewById<Button>(R.id.playerFixWebview)
+            .takeIf { it.visibility == View.VISIBLE }
+            ?.requestFocus()
     }
 
     // ------------------------------------------------------------ lifecycle

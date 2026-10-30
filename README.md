@@ -27,6 +27,9 @@ TMDB (trending + search)  →  IMDb id  →  embed provider URL  →  fullscreen
 - Popup/new-window blocking and top-frame navigation lock in the player
 - Bundled modern CA roots (Let's Encrypt ISRG X1, Google Trust Services R4) so HTTPS keeps working on unpatched Android 6/7 boxes
 - Warns if the system WebView is too old for the embed player
+- **Old-box rescue**: when the system WebView is outdated, the player offers a
+  guided "Fix WebView" screen (Play update or one-time APK sideload of WebView 105,
+  the last release for Android 6.0) with per-box ABI instructions and re-check
 
 ## Built to stay small
 
@@ -116,14 +119,33 @@ app/src/main/java/com/bitstream/tv/
 └── ui/                     # navigation helpers + "Choose source" overlay
 ```
 
-## Notes for old Android 6 boxes
+## Notes for old Android 6/7 boxes
 
-- The player needs a reasonably modern **Android System WebView** (Chromium 80+).
-  On boxes with Google Play this is usually already updated; if not, the app
-  shows a hint to update it.
-- The app bundles the ISRG Root X1 / GTS Root R4 certificates because unpatched
-  Android 6/7 system CA stores predate them (this is the usual cause of
-  "connection error" on old boxes).
+Cheap Android 6/7 boxes ship a 2015-era **AOSP WebView** (Chromium 44–56). The
+obfuscated modern embed players need **Chromium 80+** — old engines can't even
+parse their JavaScript, so videos fail. The fix is a one-time system WebView
+update, and BitStream guides the user through it:
+
+- When an outdated WebView is detected, the player shows a warning and a
+  **“Fix WebView”** button (also on the error screen) that opens an in-app
+  **rescue screen**:
+  - Box has Google Play → deep link to the *Android System WebView* store page.
+  - No Play Store → guided sideload of the last Google-signed release that
+    still supports Android 6.0: **Android System WebView 105.0.5195.136**
+    (Android 7.0 got up to 114.x). The screen tells the user which file
+    variant (arm-v7a / arm64-v8a / x86) fits their box and re-checks when
+    they're done.
+- Why not bundle our own engine? A browser engine is tens of millions of
+  lines — the practical “own WebView” option is embedding GeckoView (~40 MB,
+  no Widevine DRM). Keeping the app at ~1 MB and updating the box's WebView
+  once is the cleanest solution; rescue restores Chromium 105, which handles
+  everything the embed players need.
+- Rare AOSP-only firmwares hard-code their WebView and ignore Google-signed
+  updates — on those, nothing short of a firmware update changes the engine.
+  The rescue screen says so if the version doesn't change after install.
+- The app also bundles the ISRG Root X1 / GTS Root R4 certificates because
+  unpatched Android 6/7 system CA stores predate them (the usual cause of
+  “connection error” on old boxes).
 - Install via sideloading: enable "Unknown sources" for your file manager, then
   open the APK.
 
