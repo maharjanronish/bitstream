@@ -30,7 +30,7 @@ class RowAdapter(
     class RowVH(
         view: View,
         onClick: (Title) -> Unit,
-        nearEnd: (String) -> Unit,
+        private val nearEnd: (String) -> Unit,
     ) : RecyclerView.ViewHolder(view) {
         private val header: TextView = view.findViewById(R.id.rowTitle)
         private val list: RecyclerView = view.findViewById(R.id.rowList)

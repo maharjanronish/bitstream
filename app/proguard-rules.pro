@@ -1,28 +1,5 @@
-# kotlinx.serialization (official rules)
--keepattributes *Annotation*, InnerClasses
--dontnote kotlinx.serialization.AnnotationsKt
-
--keepclassmembers class kotlinx.serialization.json.** {
-    *** Companion;
-}
--keepclasseswithmembers class kotlinx.serialization.json.** {
-    kotlinx.serialization.KSerializer serializer(...);
-}
-
--if @kotlinx.serialization.Serializable class **
--keepclassmembers class <1> {
-    static <1>$Companion Companion;
-}
--if @kotlinx.serialization.Serializable class ** {
-    static **$* *;
-}
--keepclassmembers class <1>$<3> {
-    kotlinx.serialization.KSerializer<*> serializer(...);
-}
--if @kotlinx.serialization.Serializable class ** {
-    public static ** INSTANCE;
-}
--keepclassmembers class <1> {
-    public static <1> INSTANCE;
-    kotlinx.serialization.KSerializer<*> serializer(...);
-}
+# BitStream intentionally keeps rules minimal:
+# - kotlinx.serialization 1.7+ embeds its own R8 consumer rules
+# - OkHttp and Coil ship consumer rules as well
+# (An earlier copy of the kotlinx.serialization README rules crashed R8's
+# -if rule parser; the embedded rules cover everything this app needs.)

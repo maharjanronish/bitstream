@@ -59,7 +59,7 @@ object Net {
         }
 
         val systemTm = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-            .apply { init(null) }
+            .apply { init(null as KeyStore?) }
             .trustManagers
             .filterIsInstance<X509TrustManager>()
             .first()
